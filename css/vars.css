@@ -1,0 +1,124 @@
+:root {
+  /* Colores de fluent */
+  /* Colores de acento */
+  --yellowDark: #d29200;
+  --yellow: #ffb900;
+  --orange: #d83b01;
+  --orangeLight: #ea4300;
+  --redDark: #a4262c;
+  --red: #d13438;
+  --blueDark: #002050;
+  --blue: #0078d4;
+  --tealDark: #004b50;
+  --teal: #008272;
+  --tealLight: #00B294;
+  --greenDark: #004b1c;
+  --green: #107c10;
+  /* Colores principales */
+  /* Primary */
+  --themeDarker: #00213b;
+  --themeDark: #002d4f;
+  --themeDarkAlt: #00355e;
+  --themePrimary: #003b69;
+  --themeSecondary: #0f4c7b;
+  --themeTertiary: #427aa5;
+  --themeLight: #93b7d2;
+  --themeLighter: #c2d7e7;
+  --themeLighterAlt: #eff5f9;
+  /* Foreground */
+  --black: #000000;
+  --neutralDark: #201f1e;
+  --neutralPrimary: #323130;
+  --neutralPrimaryAlt: #3b3a39;
+  --neutralSecondary: #605e5c;
+  --neutralTertiary: #a19f9d;
+  --neutralSecondaryAlt: #8a8886;
+  --white: #ffffff;
+  /*Background*/
+  --neutralTertiaryAlt: #c8c6c4;
+  --neutralQuaternaryAlt: #e1dfdd;
+  --neutralLight: #edebe9;
+  --neutralLighter: #f3f2f1;
+  --neutralLighterAlt: #faf9f8;
+
+
+
+
+
+
+  /* Colores principales */
+  --bg: #d4e8d7;
+  --bg-light: #f0f7f0;
+  --card: #f6fbf6;
+  --text: #436757;
+  --text-light: #56706a;
+  --muted: #94a89c;
+  --bg-header: #89aa89;
+
+  /* Colores de marca */
+  --accent: #467c2a;
+  --accent-dark: #0a6b2c;
+  --accent-2: #24b36b;
+  --accent-light: rgba(15, 141, 58, 0.1);
+
+  /* Sistema de colores */
+  --success: var(--tealLight);
+  --warning: var(--yellow);
+  --danger: var(--red);
+  --info: var(--blue);
+
+  /* Bordes */
+  --border: #e8f3ea;
+  --border-light: #f1f8f1;
+
+  /* Sombras */
+  --shadow: 0 6px 20px rgba(15, 59, 47, 0.06);
+  --shadow-md: 0 8px 30px rgba(15, 59, 47, 0.08);
+  --shadow-lg: 0 12px 40px rgba(15, 59, 47, 0.12);
+
+  /* Bordes redondeados */
+  --radius: 0;
+  --radius-sm: 6px;
+  --radius-lg: 16px;
+
+  /* Tipografía */
+  --font: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* Layout */
+  --header-height: 64px;
+  --sidebar-width: 240px;
+  --max-width: 1200px;
+
+  /* ===== COLORES PARA MODALES (estilo clínico) ===== */
+  --modal-bg: #d5e7d5;
+  --modal-header: #5e8a66;
+  --modal-header-text: white;
+  --modal-card: #e2ede2;
+  --modal-card-alt: #b7d6b7;
+  --modal-section-green: #5a8973;
+  --modal-section-green-light: #d5e7d5;
+  --modal-section-olive: #7c9b1f;
+  --modal-section-olive-light: #d7e1bb;
+  --modal-section-forest: #5b8f5b;
+  --modal-section-forest-light: #c8dec8;
+  --modal-section-gold: #daa722;
+  --modal-section-gold-light: #f3e3b7;
+  --modal-highlight: #c19c3b;
+  --modal-highlight-light: #ebdcb7;
+  --modal-border: #b7d6b7;
+  --modal-text: #2d4a3e;
+  --modal-text-muted: #5a7a6a;
+
+  /* variables para niveles de triaje */
+  --triaje-gray: #cdd8cd;
+  --triaje-red: var(--red);
+  --triaje-orange: var(--orange);
+  --triaje-yellow: var(--yellow);
+  --triaje-green: var(--green);
+  --triaje-blue: var(--blue);
+  --triaje-red-light: #fed7d7;
+  --triaje-orange-light: #feebc8;
+  --triaje-yellow-light: #fefcbf;
+  --triaje-green-light: #c6f6d5;
+  --triaje-blue-light: #bee3f8;
+}

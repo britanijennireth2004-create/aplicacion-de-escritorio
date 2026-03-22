@@ -179,6 +179,12 @@ const ROUTES = {
     permission: (role) => role === 'receptionist',
     parent: 'personal'
   },
+  profile: {
+    label: 'Mi Perfil',
+    icon: ICONS.profile,
+    module: () => import('./modules/profile.js'),
+    permission: () => true
+  },
   areas: {
     label: 'Áreas',
     icon: ICONS.building,
@@ -690,7 +696,7 @@ async function mountAppShell() {
               <div id="search-results" class="header-search-results"></div>
             </div>
 
-            <div class="user-info-header" style="display: flex; align-items: center; gap: 0.75rem;">
+            <div class="user-info-header" id="header-profile" style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;" title="Ver Mi Perfil">
               <div style="width: 36px; height: 36px; background: var(--themeSecondary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem;">
                 ${user.name.charAt(0)}
               </div>
@@ -838,8 +844,21 @@ async function mountAppShell() {
   };
 
   // Escuchar navegación desde módulos
-  bus.on('app:navigate', (routeId) => {
+  bus.on('app:navigate', ({ detail: routeId }) => {
     navigateTo(routeId);
+  });
+
+  // Evento para el header profile
+  const headerProf = app.querySelector('#header-profile');
+  if (headerProf) headerProf.onclick = () => navigateTo('profile');
+
+  // Escuchar actualización de perfil
+  bus.on('user:profile_updated', ({ detail: updatedUser }) => {
+    // Actualizar UI del header
+    const userInitials = app.querySelector('.user-info-header div');
+    const userName = app.querySelector('.user-info-header span');
+    if (userInitials) userInitials.textContent = updatedUser.name.charAt(0);
+    if (userName) userName.textContent = updatedUser.name;
   });
 
   // Atajos de teclado para escritorio
@@ -871,22 +890,44 @@ async function mountAppShell() {
     const query = searchInput.value.toLowerCase().trim();
     if (!query) { searchResults.classList.remove('active'); return; }
 
+    // 1. Buscar en Menú/Módulos
+    const menuMatches = Object.entries(ROUTES)
+      .filter(([id, r]) => {
+        if (r.permission && !r.permission(APP_STATE.user.role)) return false;
+        return (r.label || '').toLowerCase().includes(query);
+      })
+      .map(([id, r]) => ({ id, label: r.label, icon: r.icon, type: 'route' }));
+
+    // 2. Buscar en Pacientes
     const patients = (store.get('patients') || []).filter(p =>
       p.name.toLowerCase().includes(query) || p.dni.includes(query)
-    );
+    ).slice(0, 5);
 
+    // 3. Buscar en Citas
     const appointments = (store.get('appointments') || []).filter(a => {
       const p = store.find('patients', a.patientId);
       return p && (p.name.toLowerCase().includes(query) || p.dni.includes(query));
-    });
+    }).slice(0, 5);
 
-    if (patients.length === 0 && appointments.length === 0) {
+    if (menuMatches.length === 0 && patients.length === 0 && appointments.length === 0) {
       searchResults.innerHTML = '<div class="header-search-empty">No se encontraron resultados.</div>';
     } else {
       let html = '';
+      if (menuMatches.length > 0) {
+        html += '<div style="padding: 0.5rem 1rem; font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; background: #f8fafc;">Navegación</div>';
+        html += menuMatches.map(m => `
+          <div class="search-result-item" data-type="route" data-id="${m.id}">
+            <div class="search-result-icon">${m.icon}</div>
+            <div class="search-result-info">
+              <div class="search-result-label">${m.label}</div>
+              <div class="search-result-parent">Módulo del Sistema</div>
+            </div>
+          </div>
+        `).join('');
+      }
       if (patients.length > 0) {
         html += '<div style="padding: 0.5rem 1rem; font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; background: #f8fafc;">Pacientes</div>';
-        html += patients.slice(0, 5).map(p => `
+        html += patients.map(p => `
           <div class="search-result-item" data-type="patient" data-id="${p.id}">
             <div class="search-result-icon">${ICONS.users}</div>
             <div class="search-result-info">
@@ -898,7 +939,7 @@ async function mountAppShell() {
       }
       if (appointments.length > 0) {
         html += '<div style="padding: 0.5rem 1rem; font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; background: #f8fafc;">Citas</div>';
-        html += appointments.slice(0, 5).map(a => {
+        html += appointments.map(a => {
           const p = store.find('patients', a.patientId);
           return `
             <div class="search-result-item" data-type="appointment" data-id="${a.id}">
@@ -923,7 +964,9 @@ async function mountAppShell() {
     if (item) {
       const type = item.dataset.type;
       const id = item.dataset.id;
-      if (type === 'patient') {
+      if (type === 'route') {
+        navigateTo(id);
+      } else if (type === 'patient') {
         localStorage.setItem('selected_patient_id', id);
         navigateTo('patients');
       } else if (type === 'appointment') {
@@ -968,14 +1011,8 @@ async function mountAppShell() {
 
     const inbox = visible.filter(i => i.createdBy !== user.id && isUnread(i)).length;
     const sent = 0; // Gmail style (unread usually refers to incoming)
-    const reminders = rems.filter(i => {
-      if (!isUnread(i)) return false;
-      // Solo para pacientes (sus propios recordatorios) o admin/recepción
-      if (user.role === 'patient') return i.recipientId === user.patientId;
-      if (['admin', 'receptionist'].includes(user.role)) return true;
-      return i.recipientId === user.id; // Fallback
-    }).length;
-    const alerts = visible.filter(i => (i.priority === 'critical' || i.priority === 'high' || i.type === 'alert') && isUnread(i)).length;
+    const reminders = visible.filter(i => i._src === 'reminders' && isUnread(i)).length;
+    const alerts = visible.filter(i => (i.priority === 'critical' || i.priority === 'high' || i.type === 'alert' || i._src === 'notifications') && isUnread(i)).length;
     return { inbox, sent, reminders, alerts, total: inbox + reminders + alerts };
   }
 

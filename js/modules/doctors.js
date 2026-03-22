@@ -333,8 +333,8 @@ export function mount(root, { bus, store, user, role }) {
 
   // Renderizar componente principal
   function render() {
-    const canManage = role === 'admin' || role === 'receptionist';
-    const canEditStatus = role === 'admin' || role === 'receptionist';
+    const canManage = role === 'admin';
+    const canEditStatus = role === 'admin';
 
     root.innerHTML = `
       <div class="module-doctors">
@@ -854,7 +854,7 @@ export function mount(root, { bus, store, user, role }) {
     const startIndex = (state.currentPage - 1) * state.itemsPerPage;
     const endIndex = startIndex + state.itemsPerPage;
     const paginatedDoctors = state.doctors.slice(startIndex, endIndex);
-    const canManageAll = role === 'admin' || role === 'receptionist';   // puede editar/estado de todos
+    const canManageAll = role === 'admin';   // puede editar/estado de todos
     const isOwnDoctor = (d) => role === 'doctor' && user?.doctorId === d.id; // médico viendo su propio perfil
 
     if (paginatedDoctors.length === 0) {
@@ -1290,7 +1290,7 @@ export function mount(root, { bus, store, user, role }) {
         viewDoctor(doctor);
         break;
       case 'edit':
-        if (role === 'admin' || role === 'receptionist' || (role === 'doctor' && user?.doctorId === doctorId)) {
+        if (role === 'admin' || (role === 'doctor' && user?.doctorId === doctorId)) {
           editDoctor(doctor);
         } else {
           showNotification('No tienes permiso para editar este perfil', 'error');
@@ -1300,12 +1300,12 @@ export function mount(root, { bus, store, user, role }) {
         viewSchedule(doctor);
         break;
       case 'status':
-        if (role === 'admin' || role === 'receptionist') {
+        if (role === 'admin') {
           openStatusModal(doctor);
         }
         break;
       case 'capacity':
-        if (role === 'admin' || role === 'receptionist') {
+        if (role === 'admin') {
           openCapacityModal(doctor);
         }
         break;

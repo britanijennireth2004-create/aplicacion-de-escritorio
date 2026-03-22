@@ -226,11 +226,16 @@ export async function createStore(bus) {
         receptionists: [
             {
                 id: 'r_1',
+                docType: 'V',
+                dni: '21345678',
                 name: 'Recepcionista Carla Román',
                 email: 'carla.recepcion@hospital.com',
-                phone: '555-0401',
+                phone: '0412-5550401',
                 areaId: 'area_1',
+                specialty: 'Admisión General',
                 title: 'Recepcionista Principal',
+                scheduleStart: '08:00',
+                scheduleEnd: '16:00',
                 isActive: true,
                 createdAt: Date.now()
             }
@@ -533,7 +538,21 @@ export async function createStore(bus) {
         }
     }
 
+    // Inicializar
     let data = loadData();
+
+    // PARCHE DE COMPATIBILIDAD: Asegurar que Carla Román tenga sus datos completos (DNI/Cédula)
+    // Esto corrige el problema de usuarios con sesiones antiguas en LocalStorage
+    const carla = data.receptionists?.find(r => r.id === 'r_1');
+    if (carla && !carla.dni) {
+        carla.docType = 'V';
+        carla.dni = '21345678';
+        carla.phone = '0412-5550401';
+        carla.specialty = 'Admisión General';
+        carla.scheduleStart = '08:00';
+        carla.scheduleEnd = '16:00';
+        saveData(data); // Persistir parche
+    }
 
     function generateId(prefix) {
         const timestamp = Date.now().toString(36);

@@ -238,12 +238,25 @@ export function mount(root, { bus, store, user, role, routeId }) {
 
   function getFolderItems() {
     let items = getAllItems();
-    if (state.folder === 'inbox') items = items.filter(i => i.createdBy !== user.id && !i.deleted);
-    else if (state.folder === 'sent') items = items.filter(i => i.createdBy === user.id && !i.deleted && i._src !== 'drafts'); // Excluir borradores de 'sent'
-    else if (state.folder === 'reminders') items = items.filter(i => i._src === 'reminders' && !i.deleted);
-    else if (state.folder === 'alerts') items = items.filter(i => (i.priority === 'critical' || i.priority === 'high' || i._src === 'notifications') && !i.deleted);
-    else if (state.folder === 'trash') items = items.filter(i => i.deleted);
-    else if (state.folder === 'drafts') items = items.filter(i => i._src === 'drafts' && !i.deleted); // Filtrar solo borradores no eliminados
+    if (state.folder === 'inbox') {
+      // Inbox solo muestra MENSAJES de otros
+      items = items.filter(i => i._src === 'messages' && i.createdBy !== user.id && !i.deleted);
+    }
+    else if (state.folder === 'sent') {
+      items = items.filter(i => i.createdBy === user.id && !i.deleted && i._src !== 'drafts');
+    }
+    else if (state.folder === 'reminders') {
+      items = items.filter(i => i._src === 'reminders' && !i.deleted);
+    }
+    else if (state.folder === 'alerts') {
+      items = items.filter(i => i._src === 'notifications' && !i.deleted);
+    }
+    else if (state.folder === 'trash') {
+      items = items.filter(i => i.deleted);
+    }
+    else if (state.folder === 'drafts') {
+      items = items.filter(i => i._src === 'drafts' && !i.deleted);
+    }
 
     // Filtro por Rol Destinatario (Solo para Inbox)
     if (state.folder === 'inbox') {

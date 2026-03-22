@@ -93,7 +93,7 @@ export function mount(root, { bus, store, user, role }) {
   }
 
   function render() {
-    const canManage = role === 'admin' || role === 'receptionist';
+    const canManage = role === 'admin';
     root.innerHTML = `
       <div class="module-doctors">
         <div class="card" style="padding: 0.75rem 1rem;">
@@ -439,7 +439,7 @@ export function mount(root, { bus, store, user, role }) {
     const items = state.nurses.slice(start, start + state.itemsPerPage);
 
     if (elements.nursesCount) elements.nursesCount.textContent = `${state.nurses.length} Registros`;
-    const canManageAll = role === 'admin' || role === 'receptionist';
+    const canManageAll = role === 'admin';
     const isOwnNurse = (n) => role === 'nurse' && user?.staffId === n.id;
 
     elements.nursesList.innerHTML = items.map(nurse => {
